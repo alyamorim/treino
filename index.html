@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Treino Alysson — Registro & Alternativas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0e1116;
+    --surface:#171b22;
+    --surface-2:#1e232c;
+    --line:#272d38;
+    --line-soft:#20252e;
+    --txt:#e8ecf2;
+    --txt-dim:#9aa4b2;
+    --txt-faint:#616b7a;
+    --acc:#22d3ee;            /* redefinido por treino */
+    --acc-ink:#06232a;
+    --radius:16px;
+    --shadow:0 1px 0 rgba(255,255,255,.03) inset, 0 8px 24px rgba(0,0,0,.35);
+  }
+  /* Cor por treino — a página "veste" o grupo muscular */
+  [data-treino="A"]{ --acc:#22d3ee; --acc-ink:#052a31; }
+  [data-treino="B"]{ --acc:#fbbf24; --acc-ink:#2c2005; }
+  [data-treino="C"]{ --acc:#a78bfa; --acc-ink:#1e1338; }
+
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:
+      radial-gradient(1200px 600px at 50% -10%, rgba(255,255,255,.04), transparent 60%),
+      var(--bg);
+    color:var(--txt);
+    font-family:"Barlow",system-ui,-apple-system,sans-serif;
+    font-size:16px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:64px;
+  }
+  .wrap{max-width:720px;margin:0 auto;padding:0 18px}
+
+  /* ---------- Cabeçalho ---------- */
+  header.hero{
+    padding:32px 0 20px;
+    border-bottom:1px solid var(--line-soft);
+    margin-bottom:20px;
+  }
+  .eyebrow{
+    font-family:"Barlow Semi Condensed";
+    font-weight:600;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    font-size:.72rem;
+    color:var(--acc);
+    transition:color .35s ease;
+  }
+  h1{
+    font-family:"Barlow Semi Condensed";
+    font-weight:800;
+    font-size:clamp(2rem,7vw,2.9rem);
+    line-height:1.02;
+    letter-spacing:-.01em;
+    margin:.28em 0 .18em;
+  }
+  .badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  .badge{
+    font-family:"Barlow Semi Condensed";
+    font-weight:600;letter-spacing:.04em;
+    font-size:.78rem;text-transform:uppercase;
+    color:var(--txt-dim);
+    background:var(--surface);
+    border:1px solid var(--line);
+    padding:5px 11px;border-radius:100px;
+  }
+
+  /* ---------- Abas de treino ---------- */
+  .tabs{
+    display:grid;grid-template-columns:repeat(3,1fr);
+    gap:8px;margin-bottom:22px;
+    position:sticky;top:0;z-index:20;
+    background:linear-gradient(var(--bg) 72%, transparent);
+    padding:10px 0 12px;
+  }
+  .tab{
+    appearance:none;border:1px solid var(--line);
+    background:var(--surface);color:var(--txt-dim);
+    border-radius:14px;padding:11px 6px 10px;cursor:pointer;
+    text-align:center;transition:.18s ease;
+    display:flex;flex-direction:column;gap:2px;align-items:center;
+  }
+  .tab .t-letter{
+    font-family:"Barlow Semi Condensed";font-weight:800;
+    font-size:1.35rem;line-height:1;letter-spacing:.02em;
+  }
+  .tab .t-focus{
+    font-family:"Barlow Semi Condensed";font-weight:600;
+    font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;
+  }
+  .tab[aria-selected="true"]{
+    color:var(--tab-acc);
+    border-color:color-mix(in srgb, var(--tab-acc) 55%, transparent);
+    background:color-mix(in srgb, var(--tab-acc) 12%, var(--surface));
+    box-shadow:0 0 0 1px color-mix(in srgb,var(--tab-acc) 30%,transparent) inset;
+  }
+  .tab:focus-visible{outline:2px solid var(--tab-acc);outline-offset:2px}
+  .tab[data-t="A"]{--tab-acc:#22d3ee}
+  .tab[data-t="B"]{--tab-acc:#fbbf24}
+  .tab[data-t="C"]{--tab-acc:#a78bfa}
+
+  /* ---------- Barra de sessão ---------- */
+  .session{
+    display:flex;align-items:center;gap:14px;
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--radius);padding:14px 16px;margin-bottom:18px;
+  }
+  .session .count{
+    font-family:"Barlow Semi Condensed";font-weight:800;
+    font-size:1.5rem;line-height:1;color:var(--acc);
+    transition:color .35s ease;white-space:nowrap;
+  }
+  .session .count small{color:var(--txt-faint);font-weight:600}
+  .session .bar-outer{
+    flex:1;height:8px;border-radius:100px;background:var(--surface-2);
+    overflow:hidden;border:1px solid var(--line);
+  }
+  .session .bar-inner{
+    height:100%;width:0;border-radius:100px;
+    background:var(--acc);transition:width .4s cubic-bezier(.2,.8,.2,1),background .35s ease;
+  }
+  .session button.reset{
+    appearance:none;background:transparent;border:1px solid var(--line);
+    color:var(--txt-dim);border-radius:10px;padding:7px 12px;cursor:pointer;
+    font-family:"Barlow Semi Condensed";font-weight:600;font-size:.82rem;
+    letter-spacing:.03em;text-transform:uppercase;white-space:nowrap;transition:.16s;
+  }
+  .session button.reset:hover{color:var(--txt);border-color:var(--acc)}
+  .session button.reset:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+
+  /* ---------- Cards de exercício ---------- */
+  .list{display:flex;flex-direction:column;gap:14px}
+  .ex{
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--radius);box-shadow:var(--shadow);
+    overflow:hidden;transition:border-color .2s,opacity .2s;
+  }
+  .ex.done{border-color:color-mix(in srgb,var(--acc) 45%,var(--line))}
+  .ex-head{display:flex;gap:14px;padding:16px 16px 12px}
+  .ord{
+    font-family:"Barlow Semi Condensed";font-weight:800;
+    font-size:2.5rem;line-height:.85;
+    -webkit-text-stroke:1.5px color-mix(in srgb,var(--acc) 70%,transparent);
+    color:transparent;flex:none;min-width:1.4em;
+    transition:-webkit-text-stroke-color .35s ease;
+    font-variant-numeric:tabular-nums;
+  }
+  .ex.done .ord{
+    -webkit-text-stroke:0;
+    color:color-mix(in srgb,var(--acc) 85%,white);
+  }
+  .ex-title{flex:1;min-width:0}
+  .ex-name{
+    font-family:"Barlow Semi Condensed";font-weight:700;
+    font-size:1.18rem;line-height:1.1;letter-spacing:-.005em;margin:0;
+  }
+  .ex-target{
+    font-size:.82rem;color:var(--txt-faint);margin-top:2px;
+    font-weight:500;
+  }
+  .check{
+    flex:none;width:30px;height:30px;border-radius:9px;cursor:pointer;
+    border:1.5px solid var(--line);background:var(--surface-2);
+    display:grid;place-items:center;transition:.16s;align-self:flex-start;
+  }
+  .check svg{width:16px;height:16px;stroke:var(--bg);opacity:0;transform:scale(.6);transition:.16s}
+  .check[aria-pressed="true"]{background:var(--acc);border-color:var(--acc)}
+  .check[aria-pressed="true"] svg{opacity:1;transform:scale(1)}
+  .check:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+
+  /* meta chips */
+  .meta{display:flex;flex-wrap:wrap;gap:7px;padding:0 16px 14px}
+  .chip{
+    display:inline-flex;align-items:baseline;gap:5px;
+    background:var(--surface-2);border:1px solid var(--line-soft);
+    border-radius:9px;padding:6px 10px;
+  }
+  .chip .k{
+    font-family:"Barlow Semi Condensed";font-weight:600;
+    font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--txt-faint);
+  }
+  .chip .v{
+    font-family:"Barlow Semi Condensed";font-weight:700;
+    font-size:.95rem;color:var(--txt);font-variant-numeric:tabular-nums;
+  }
+
+  /* carga de hoje */
+  .today{
+    display:flex;align-items:center;gap:12px;
+    margin:0 16px 14px;padding:12px 14px;
+    background:color-mix(in srgb,var(--acc) 8%,var(--surface-2));
+    border:1px solid color-mix(in srgb,var(--acc) 22%,var(--line-soft));
+    border-radius:12px;
+  }
+  .today label{
+    font-family:"Barlow Semi Condensed";font-weight:600;
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--txt-dim);line-height:1.15;
+  }
+  .today .field{display:flex;align-items:baseline;gap:6px;margin-left:auto}
+  .today input{
+    width:82px;background:transparent;border:none;
+    border-bottom:2px solid color-mix(in srgb,var(--acc) 45%,var(--line));
+    color:var(--txt);text-align:right;
+    font-family:"Barlow Semi Condensed";font-weight:800;font-size:1.6rem;
+    padding:0 2px 2px;font-variant-numeric:tabular-nums;
+  }
+  .today input:focus{outline:none;border-bottom-color:var(--acc)}
+  .today input::placeholder{color:var(--txt-faint);font-weight:600}
+  .today .unit{
+    font-family:"Barlow Semi Condensed";font-weight:700;
+    color:var(--txt-dim);font-size:.95rem;
+  }
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  input[type=number]{-moz-appearance:textfield}
+
+  /* alternativas */
+  .alt-toggle{
+    width:100%;appearance:none;cursor:pointer;text-align:left;
+    background:transparent;border:none;border-top:1px solid var(--line-soft);
+    color:var(--txt-dim);padding:12px 16px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    font-family:"Barlow Semi Condensed";font-weight:600;
+    font-size:.86rem;letter-spacing:.04em;text-transform:uppercase;transition:.16s;
+  }
+  .alt-toggle:hover{color:var(--txt)}
+  .alt-toggle:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}
+  .alt-toggle .caret{transition:transform .22s ease;color:var(--acc)}
+  .ex.open .alt-toggle .caret{transform:rotate(180deg)}
+  .alt-panel{
+    display:grid;grid-template-rows:0fr;
+    transition:grid-template-rows .28s ease;
+    background:color-mix(in srgb,var(--acc) 4%,var(--bg));
+  }
+  .ex.open .alt-panel{grid-template-rows:1fr}
+  .alt-inner{overflow:hidden}
+  .alt-list{list-style:none;margin:0;padding:4px 16px 16px}
+  .alt-list li{
+    display:flex;gap:12px;padding:11px 0;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .alt-list li:last-child{border-bottom:none}
+  .alt-dot{
+    flex:none;width:7px;height:7px;border-radius:50%;margin-top:8px;
+    background:var(--acc);
+  }
+  .alt-name{
+    font-family:"Barlow Semi Condensed";font-weight:700;
+    font-size:1rem;color:var(--txt);line-height:1.2;
+  }
+  .alt-why{font-size:.85rem;color:var(--txt-dim);margin-top:1px}
+
+  /* rodapé */
+  footer{
+    margin-top:26px;padding-top:18px;border-top:1px solid var(--line-soft);
+    color:var(--txt-faint);font-size:.8rem;
+    display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:space-between;
+  }
+  footer .saved{display:inline-flex;align-items:center;gap:6px}
+  footer .saved .dot{width:7px;height:7px;border-radius:50%;background:#3ddc84}
+  footer button.clear{
+    appearance:none;background:transparent;border:none;color:var(--txt-faint);
+    text-decoration:underline;cursor:pointer;font-size:.8rem;font-family:inherit;
+  }
+  footer button.clear:hover{color:var(--txt-dim)}
+
+  .panel[hidden]{display:none}
+
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important}
+  }
+</style>
+</head>
+<body data-treino="A">
+  <div class="wrap">
+
+    <header class="hero">
+      <div class="eyebrow">Rotina · Hipertrofia</div>
+      <h1>Treino Alysson</h1>
+      <div class="badges">
+        <span class="badge">Iniciante</span>
+        <span class="badge">3 séries · intervalo curto</span>
+        <span class="badge" id="badge-focus">Costas + Bíceps</span>
+      </div>
+    </header>
+
+    <nav class="tabs" role="tablist" aria-label="Escolher treino">
+      <button class="tab" role="tab" data-t="A" aria-selected="true">
+        <span class="t-letter">A</span><span class="t-focus">Costas</span>
+      </button>
+      <button class="tab" role="tab" data-t="B" aria-selected="false">
+        <span class="t-letter">B</span><span class="t-focus">Peito</span>
+      </button>
+      <button class="tab" role="tab" data-t="C" aria-selected="false">
+        <span class="t-letter">C</span><span class="t-focus">Inferiores</span>
+      </button>
+    </nav>
+
+    <div class="session">
+      <div class="count"><span id="sess-done">0</span><small>/<span id="sess-total">7</span> feitos</small></div>
+      <div class="bar-outer"><div class="bar-inner" id="sess-bar"></div></div>
+      <button class="reset" id="reset-btn">Zerar sessão</button>
+    </div>
+
+    <main class="list" id="list"></main>
+
+    <footer>
+      <span class="saved"><span class="dot"></span> Progresso salvo neste dispositivo</span>
+      <button class="clear" id="clear-all">Apagar todos os registros</button>
+    </footer>
+  </div>
+
+<script>
+/* ============ DADOS ============ */
+const TREINOS = {
+  A: {
+    focus: "Costas + Bíceps",
+    ex: [
+      { name:"Abdominal Supra Solo", target:"Abdômen (reto)", series:"3", reps:"12", carga:"Peso corporal", intervalo:"45s",
+        alts:[
+          ["Abdominal na máquina","Mesma flexão de tronco, mas com carga fácil de progredir."],
+          ["Crunch na polia alta (ajoelhado)","Resistência constante e ajuste fino de carga."],
+          ["Elevação de pernas suspenso","Desloca a ênfase para a porção inferior."],
+          ["Prancha isométrica","Opção sem flexionar a coluna, foco em estabilização."]
+        ]},
+      { name:"Remada Máquina (Pegada Neutra)", target:"Dorsal médio", series:"3", reps:"10–12", carga:"35 kg", intervalo:"45s",
+        alts:[
+          ["Remada baixa na polia (triângulo)","Mesmo padrão e pegada neutra, com cabo."],
+          ["Remada unilateral com halter (serrote)","Trabalha um lado por vez e corrige assimetrias."],
+          ["Remada curvada com halteres","Versão livre, recruta mais estabilizadores."],
+          ["Remada cavalinho pegada neutra","Permite subir bastante a carga."]
+        ]},
+      { name:"Puxada Aberta Barra Reta", target:"Dorsais (largura)", series:"3", reps:"10–12", carga:"16 kg", intervalo:"45s",
+        alts:[
+          ["Barra fixa (assistida se precisar)","Padrão livre e ótimo estímulo para as costas."],
+          ["Puxada pegada supinada","Recruta mais bíceps e a parte baixa do dorsal."],
+          ["Puxada triângulo (fechada)","Foco em espessura do dorsal médio."],
+          ["Pulldown de braços estendidos (pullover na polia)","Isola o dorsal sem envolver o bíceps."]
+        ]},
+      { name:"Remada Cavalinho (Pegada Pronada)", target:"Dorso (espessura)", series:"3", reps:"10–12", carga:"20 kg", intervalo:"15s",
+        alts:[
+          ["Remada curvada com barra (pronada)","Livre, aceita muita carga."],
+          ["Remada baixa pegada pronada aberta","Ênfase em trapézio médio e romboides."],
+          ["Remada no Smith","Trajetória guiada, mais estável."],
+          ["Remada T com apoio no peito","Poupa a lombar e isola o dorso."]
+        ]},
+      { name:"Crucifixo Inverso Máquina", target:"Deltoide posterior", series:"3", reps:"10–12", carga:"10 kg", intervalo:"45s",
+        alts:[
+          ["Crucifixo inverso com halteres (tronco inclinado)","Versão livre do mesmo movimento."],
+          ["Face pull na polia","Deltoide posterior + manguito rotador."],
+          ["Crucifixo inverso no cross (polia)","Tensão contínua durante toda a fase."],
+          ["Elevação posterior no banco inclinado","Peito apoiado elimina o balanço."]
+        ]},
+      { name:"Rosca Scott Máquina", target:"Bíceps", series:"3", reps:"10–12", carga:"10 kg", intervalo:"45s",
+        alts:[
+          ["Rosca Scott com barra W","Mesma posição de apoio, com peso livre."],
+          ["Rosca concentrada","Bom pico de contração, um braço por vez."],
+          ["Rosca no banco inclinado (halteres)","Alonga bem o bíceps na descida."],
+          ["Rosca direta com barra","Permite mais carga total."]
+        ]},
+      { name:"Rosca Direta na Polia Baixa com Corda", target:"Bíceps", series:"3", reps:"10–12", carga:"5 kg", intervalo:"45s",
+        alts:[
+          ["Rosca direta com barra reta ou W","Clássico com carga e supinação fixa."],
+          ["Rosca alternada com halteres","Supinação livre, um braço de cada vez."],
+          ["Rosca martelo (corda/halteres)","Pega o braquial e o antebraço."],
+          ["Rosca na polia com barra reta","Tensão contínua do início ao fim."]
+        ]}
+    ]
+  },
+  B: {
+    focus: "Peito + Ombro + Tríceps",
+    ex: [
+      { name:"Prancha Isométrica", target:"Core", series:"3", reps:"40s", carga:"Isométrico", intervalo:"45s",
+        alts:[
+          ["Prancha lateral","Foca os oblíquos e a estabilização lateral."],
+          ["Prancha com toque no ombro","Adiciona componente anti-rotação."],
+          ["Roda abdominal (ab wheel)","Progressão mais avançada do core."],
+          ["Hollow hold","Controle e tensão de todo o abdômen."]
+        ]},
+      { name:"Crucifixo Máquina (Peck Deck)", target:"Peitoral (adução)", series:"3", reps:"10–12", carga:"15 kg", intervalo:"45s",
+        alts:[
+          ["Crucifixo com halteres (banco reto)","Versão livre, com mais amplitude."],
+          ["Crossover na polia","Tensão contínua e ângulo ajustável."],
+          ["Crucifixo inclinado com halteres","Desloca a ênfase para o peito superior."],
+          ["Crossover de baixo para cima","Ênfase na porção clavicular."]
+        ]},
+      { name:"Supino Máquina (Pegada Pronada)", target:"Peitoral (empurrar)", series:"3", reps:"10–12", carga:"35 kg", intervalo:"45s",
+        alts:[
+          ["Supino reto com halteres","Mais amplitude e estabilizadores."],
+          ["Supino reto com barra","Foco em força e carga."],
+          ["Supino no Smith","Trajetória guiada, seguro sem ajudante."],
+          ["Flexão de braço","Peso corporal, dá pra fazer em casa."]
+        ]},
+      { name:"Supino Inclinado com Halteres", target:"Peitoral superior", series:"3", reps:"10–12", carga:"5 kg", intervalo:"45s",
+        alts:[
+          ["Supino inclinado com barra","Aceita mais carga."],
+          ["Supino inclinado na máquina","Trajetória guiada e estável."],
+          ["Supino inclinado no Smith","Boa opção para treinar sozinho."],
+          ["Crossover de baixo para cima","Isola a porção superior do peito."]
+        ]},
+      { name:"Elevação Lateral Sentado com Halteres", target:"Deltoide lateral", series:"3", reps:"10–12", carga:"3 kg", intervalo:"45s",
+        alts:[
+          ["Elevação lateral em pé","Permite leve impulso e um pouco mais de carga."],
+          ["Elevação lateral na polia (unilateral)","Tensão já no começo do movimento."],
+          ["Elevação lateral na máquina","Trajetória fixa, sem roubo."],
+          ["Elevação lateral inclinado (lean-away)","Tensão máxima na fase de alongamento."]
+        ]},
+      { name:"Tríceps Testa com Halteres", target:"Tríceps", series:"3", reps:"10–12", carga:"6 kg", intervalo:"45s",
+        alts:[
+          ["Tríceps testa com barra W","Mais estável e permite mais carga."],
+          ["Tríceps francês (acima da cabeça)","Ênfase na cabeça longa do tríceps."],
+          ["Tríceps na polia com corda","Tensão contínua, fácil de progredir."],
+          ["Mergulho no banco (bench dips)","Peso corporal, sem equipamento."]
+        ]},
+      { name:"Tríceps na Polia Barra W", target:"Tríceps", series:"3", reps:"10–12", carga:"5 kg", intervalo:"45s",
+        alts:[
+          ["Tríceps na polia com corda","Abertura no final gera bom pico."],
+          ["Tríceps pegada pronada (barra reta)","Ênfase na cabeça lateral."],
+          ["Mergulho nas paralelas (assistido)","Composto e com peso corporal."],
+          ["Tríceps coice na polia/halter","Isolamento com pico de contração."]
+        ]}
+    ]
+  },
+  C: {
+    focus: "Membros Inferiores",
+    ex: [
+      { name:"Abdominal Infra com as Pernas Flexionadas", target:"Abdômen inferior", series:"3", reps:"15", carga:"Peso corporal", intervalo:"45s",
+        alts:[
+          ["Elevação de pernas na cadeira romana","Mais estímulo para o infra."],
+          ["Elevação de pernas suspenso na barra","Versão mais avançada."],
+          ["Abdominal infra no banco declinado","Aumenta a amplitude."],
+          ["Canivete (V-up)","Trabalha supra e infra juntos."]
+        ]},
+      { name:"Cadeira Extensora", target:"Quadríceps (isolado)", series:"3", reps:"10–12", carga:"35 kg", intervalo:"45s",
+        alts:[
+          ["Agachamento livre","Composto, grande estímulo para as pernas."],
+          ["Hack squat","Quadríceps com a coluna apoiada."],
+          ["Leg press","Carga alta com bastante segurança."],
+          ["Afundo / passada (lunge)","Unilateral, trabalha equilíbrio."]
+        ]},
+      { name:"Leg Press Horizontal", target:"Quadríceps + glúteo", series:"3", reps:"10–12", carga:"50 kg", intervalo:"45s",
+        alts:[
+          ["Agachamento livre","Padrão completo de membros inferiores."],
+          ["Agachamento no Smith","Guiado, bom para aprender o movimento."],
+          ["Hack squat","Foco maior no quadríceps."],
+          ["Leg press 45°","Só muda o ângulo de empurrar."]
+        ]},
+      { name:"Stiff com Halteres", target:"Posterior de coxa + glúteo", series:"3", reps:"10–12", carga:"3 kg", intervalo:"45s",
+        alts:[
+          ["Stiff com barra","Permite mais carga."],
+          ["Levantamento terra romeno (RDL)","Trabalha toda a cadeia posterior."],
+          ["Mesa flexora (deitado)","Isola o posterior sem exigir a lombar."],
+          ["Bom dia (good morning)","Posterior de coxa + lombar."]
+        ]},
+      { name:"Abdução de Quadril Máquina", target:"Glúteo médio", series:"3", reps:"10–12", carga:"45 kg", intervalo:"45s",
+        alts:[
+          ["Abdução com elástico/caneleira","Dá pra fazer em casa."],
+          ["Abdução na polia baixa (unilateral)","Tensão contínua, um lado por vez."],
+          ["Coice na polia (glute kickback)","Ênfase no glúteo máximo."],
+          ["Elevação pélvica (hip thrust)","Glúteo máximo com bastante carga."]
+        ]},
+      { name:"Panturrilha Sentado", target:"Panturrilha (sóleo)", series:"3", reps:"10–12", carga:"25 kg", intervalo:"45s",
+        alts:[
+          ["Panturrilha em pé na máquina","Joelho estendido pega mais o gastrocnêmio."],
+          ["Panturrilha no leg press","Aceita carga alta."],
+          ["Panturrilha no Smith (em pé)","Guiada e estável."],
+          ["Panturrilha unilateral no step","Mais amplitude e simetria."]
+        ]},
+      { name:"Cadeira Flexora", target:"Posterior de coxa", series:"3", reps:"10–12", carga:"45 kg", intervalo:"45s",
+        alts:[
+          ["Mesa flexora (deitado)","Muda a posição do quadril e o estímulo."],
+          ["Flexora unilateral","Corrige diferença entre as pernas."],
+          ["Stiff / RDL","Versão composta, com quadril."],
+          ["Flexão nórdica (nordic curl)","Excêntrico intenso, mais avançado."]
+        ]}
+    ]
+  }
+};
+
+/* ============ ESTADO / STORAGE ============ */
+const KEY = "treino-alysson-v1";
+let state = { loads:{}, done:{} };
+try{ const raw = localStorage.getItem(KEY); if(raw) state = Object.assign(state, JSON.parse(raw)); }catch(e){}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+
+let current = "A";
+const $ = s => document.querySelector(s);
+const list = $("#list");
+
+/* ============ RENDER ============ */
+const caret = `<svg class="caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+const tick  = `<svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+
+function render(){
+  const t = TREINOS[current];
+  document.body.dataset.treino = current;
+  $("#badge-focus").textContent = t.focus;
+  $("#sess-total").textContent = t.ex.length;
+
+  list.innerHTML = t.ex.map((ex,i)=>{
+    const id = current + (i+1);
+    const done = !!state.done[id];
+    const load = state.loads[id] ?? "";
+    const ord = String(i+1).padStart(2,"0");
+    const alts = ex.alts.map(a=>`
+      <li><span class="alt-dot"></span>
+        <div><div class="alt-name">${a[0]}</div><div class="alt-why">${a[1]}</div></div>
+      </li>`).join("");
+    return `
+    <article class="ex ${done?"done":""}" data-id="${id}">
+      <div class="ex-head">
+        <div class="ord">${ord}</div>
+        <div class="ex-title">
+          <h3 class="ex-name">${ex.name}</h3>
+          <div class="ex-target">${ex.target}</div>
+        </div>
+        <button class="check" aria-pressed="${done}" aria-label="Marcar como feito" data-act="done">${tick}</button>
+      </div>
+      <div class="meta">
+        <span class="chip"><span class="k">Séries</span><span class="v">${ex.series}</span></span>
+        <span class="chip"><span class="k">Reps</span><span class="v">${ex.reps}</span></span>
+        <span class="chip"><span class="k">Carga base</span><span class="v">${ex.carga}</span></span>
+        <span class="chip"><span class="k">Intervalo</span><span class="v">${ex.intervalo}</span></span>
+      </div>
+      <div class="today">
+        <label>Carga de<br>hoje</label>
+        <div class="field">
+          <input type="number" inputmode="decimal" step="0.5" min="0" placeholder="—"
+                 value="${load}" data-act="load" aria-label="Carga usada hoje em kg">
+          <span class="unit">kg</span>
+        </div>
+      </div>
+      <button class="alt-toggle" data-act="toggle" aria-expanded="false">
+        <span>Alternativas · ${ex.alts.length} opções</span> ${caret}
+      </button>
+      <div class="alt-panel"><div class="alt-inner">
+        <ul class="alt-list">${alts}</ul>
+      </div></div>
+    </article>`;
+  }).join("");
+
+  updateSession();
+}
+
+function updateSession(){
+  const t = TREINOS[current];
+  const total = t.ex.length;
+  let done = 0;
+  t.ex.forEach((_,i)=>{ if(state.done[current+(i+1)]) done++; });
+  $("#sess-done").textContent = done;
+  $("#sess-bar").style.width = (done/total*100)+"%";
+}
+
+/* ============ INTERAÇÕES ============ */
+document.querySelectorAll(".tab").forEach(tab=>{
+  tab.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected","false"));
+    tab.setAttribute("aria-selected","true");
+    current = tab.dataset.t;
+    render();
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+});
+
+list.addEventListener("click",e=>{
+  const card = e.target.closest(".ex"); if(!card) return;
+  const id = card.dataset.id;
+  const act = e.target.closest("[data-act]")?.dataset.act;
+
+  if(act==="done"){
+    state.done[id] = !state.done[id];
+    card.classList.toggle("done", state.done[id]);
+    e.target.closest(".check").setAttribute("aria-pressed", state.done[id]);
+    updateSession(); save();
+  }
+  if(act==="toggle"){
+    const open = card.classList.toggle("open");
+    e.target.closest(".alt-toggle").setAttribute("aria-expanded", open);
+  }
+});
+
+list.addEventListener("input",e=>{
+  if(e.target.dataset.act==="load"){
+    const id = e.target.closest(".ex").dataset.id;
+    const v = e.target.value.trim();
+    if(v==="") delete state.loads[id]; else state.loads[id]=v;
+    save();
+  }
+});
+
+$("#reset-btn").addEventListener("click",()=>{
+  TREINOS[current].ex.forEach((_,i)=>{ delete state.done[current+(i+1)]; });
+  save(); render();
+});
+
+$("#clear-all").addEventListener("click",()=>{
+  if(confirm("Apagar cargas registradas e marcações de todos os treinos?")){
+    state = { loads:{}, done:{} }; save(); render();
+  }
+});
+
+render();
+</script>
+</body>
+</html>
